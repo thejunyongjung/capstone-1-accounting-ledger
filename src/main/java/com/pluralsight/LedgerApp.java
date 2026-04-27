@@ -1,8 +1,6 @@
 package com.pluralsight;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -25,8 +23,8 @@ public class LedgerApp {
         homeScreen();
     }
 
-    // Method: Reading CSV file
-    private void loadTransactions() {
+    // Method: Reading CSV file (under run method)
+    public void loadTransactions() {
 
         String fileName = "transactions.csv";
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -48,8 +46,8 @@ public class LedgerApp {
         }
     }
 
-    // Method: Homescreen
-    private void homeScreen() {
+    // Method: Homescreen (under run method)
+    public void homeScreen() {
         boolean running = true;
         while (running) {
             System.out.println();
@@ -88,7 +86,52 @@ public class LedgerApp {
         System.out.println("Thank you");
     }
 
-    private void addDeposit() {
+    // Method: Adding Deposit (under homeScreen method)
+    public void addDeposit() {
+        System.out.println();
+        System.out.println("==============================");
+        System.out.println("Add Deposit");
+        System.out.println("==============================");
+
+        // Date | Time - Automatically
+        LocalDate date = LocalDate.now();
+        LocalTime time = LocalTime.now().withNano(0);
+
+        // Description | Vendor | Amount - User Input
+        System.out.print("Enter description: ");
+        String description = scanner.nextLine().trim();
+
+        System.out.print("Enter vendor: ");
+        String vendor = scanner.nextLine().trim();
+
+        System.out.print("Enter amount: ");
+        double amount = Math.abs(scanner.nextDouble());
+        scanner.nextLine();
+
+        // Create a transaction object for deposit
+        Transaction deposit = new Transaction(date, time, description, vendor, amount);
+
+        // Add to the Arraylist above
+        this.transactions.add(deposit);
+
+        // Append the deposit transaction to the transaction.csv
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("transactions.csv", true))) {
+            bw.write(deposit.toCsvString() + "\n");
+        } catch (IOException e) {
+            System.out.println("Error writing transactions! " + e.getMessage());
+            return;
+        }
+
+        // Confirmation Message to User
+        System.out.println();
+        System.out.println("Deposit added successfully!");
+        System.out.println("------------------------------");
+        System.out.println("Date:        " + deposit.getDate());
+        System.out.println("Time:        " + deposit.getTime());
+        System.out.println("Description: " + deposit.getDescription());
+        System.out.println("Vendor:      " + deposit.getVendor());
+        System.out.printf("Amount:      $%.2f%n", deposit.getAmount());
+        System.out.println("------------------------------");
     }
 
     private void makePayment() {
