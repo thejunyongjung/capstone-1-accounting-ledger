@@ -114,7 +114,7 @@ public class LedgerApp {
         // Add to the Arraylist above
         this.transactions.add(deposit);
 
-        // Append the deposit transaction to the transaction.csv
+        // Append the deposit transaction to the transactions.csv
         try(BufferedWriter bw = new BufferedWriter(new FileWriter("transactions.csv", true))) {
             bw.write(deposit.toCsvString() + "\n");
         } catch (IOException e) {
@@ -134,7 +134,52 @@ public class LedgerApp {
         System.out.println("------------------------------");
     }
 
+    // Method: Making Payment (under homeScreen method)
     private void makePayment() {
+        System.out.println();
+        System.out.println("==============================");
+        System.out.println("Make Payment");
+        System.out.println("==============================");
+
+        // Date | Time - Automatically
+        LocalDate date = LocalDate.now();
+        LocalTime time = LocalTime.now().withNano(0);
+
+        // Description | Vendor | Amount - User Input
+        System.out.print("Enter description: ");
+        String description = scanner.nextLine().trim();
+
+        System.out.print("Enter vendor: ");
+        String vendor = scanner.nextLine().trim();
+
+        System.out.print("Enter amount: ");
+        double amount = -Math.abs(scanner.nextDouble());
+        scanner.nextLine();
+
+        // Create a transaction object for deposit
+        Transaction payment = new Transaction(date, time, description, vendor, amount);
+
+        // Add to the Arraylist above
+        this.transactions.add(payment);
+
+        // Append the payment transaction to the transactions.csv
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("transactions.csv", true))) {
+            bw.write(payment.toCsvString() + "\n");
+        } catch (IOException e) {
+            System.out.println("Error writing transactions! " + e.getMessage());
+            return;
+        }
+
+        // Confirmation Message to User
+        System.out.println();
+        System.out.println("Payment recorded successfully!");
+        System.out.println("------------------------------");
+        System.out.println("Date:        " + payment.getDate());
+        System.out.println("Time:        " + payment.getTime());
+        System.out.println("Description: " + payment.getDescription());
+        System.out.println("Vendor:      " + payment.getVendor());
+        System.out.printf("Amount:      $%.2f%n", payment.getAmount());
+        System.out.println("------------------------------");
     }
 
     private void ledgerScreen() {
