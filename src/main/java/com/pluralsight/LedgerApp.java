@@ -410,6 +410,7 @@ public class LedgerApp {
 
             if (transactionDate.getYear() == lastYear.getYear()) {
                 printTransaction(transaction);
+                count++;
             }
         }
         if (count == 0) {
