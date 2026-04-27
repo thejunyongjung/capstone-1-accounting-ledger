@@ -115,7 +115,7 @@ public class LedgerApp {
         this.transactions.add(deposit);
 
         // Append the deposit transaction to the transactions.csv
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter("transactions.csv", true))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("transactions.csv", true))) {
             bw.write(deposit.toCsvString() + "\n");
         } catch (IOException e) {
             System.out.println("Error writing transactions! " + e.getMessage());
@@ -163,7 +163,7 @@ public class LedgerApp {
         this.transactions.add(payment);
 
         // Append the payment transaction to the transactions.csv
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter("transactions.csv", true))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("transactions.csv", true))) {
             bw.write(payment.toCsvString() + "\n");
         } catch (IOException e) {
             System.out.println("Error writing transactions! " + e.getMessage());
@@ -183,5 +183,96 @@ public class LedgerApp {
     }
 
     private void ledgerScreen() {
+        boolean inLedger = true;
+        while (inLedger) {
+            System.out.println();
+            System.out.println("==============================");
+            System.out.println("Ledger Screen");
+            System.out.println("==============================");
+            System.out.println("A) All Transactions");
+            System.out.println("D) Deposits Only");
+            System.out.println("P) Payments Only");
+            System.out.println("R) Reports");
+            System.out.println("H) Home");
+            System.out.println("------------------------------");
+            System.out.print("Enter your choice: ");
+            String choice = scanner.nextLine().trim().toUpperCase();
+
+            switch (choice) {
+                case "A":
+                    displayAll();
+                    break;
+                case "D":
+                    displayDeposits();
+                    break;
+                case "P":
+                    displayPayments();
+                    break;
+                case "R":
+                    System.out.println("Reports - coming soon!");
+                    break;
+                case "H":
+                    inLedger = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again!");
+                    break;
+            }
+        }
     }
+
+    // Method: Display All Transactions (under ledgerScreen method)
+    public void displayAll() {
+        System.out.println();
+        System.out.println("===================================================================================");
+        System.out.println("All Transactions");
+        printHeader();
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            printTransaction(transactions.get(i));
+        }
+    }
+
+    // Method: Display Deposit Transactions (under ledgerScreen method)
+    public void displayDeposits() {
+        System.out.println();
+        System.out.println("===================================================================================");
+        System.out.println("Deposit Transactions");
+        printHeader();
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            Transaction transaction = transactions.get(i);
+            if (transaction.getAmount() > 0) {
+                printTransaction(transaction);
+            }
+        }
+    }
+
+    // Method: Display Payment Transactions (under ledgerScreen method)
+    public void displayPayments() {
+        System.out.println();
+        System.out.println("===================================================================================");
+        System.out.println("Payment Transactions");
+        printHeader();
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            Transaction transaction = transactions.get(i);
+            if (transaction.getAmount() < 0) {
+                printTransaction(transaction);
+            }
+        }
+    }
+
+    // Method: Display transaction header (under displayAll/displayDeposits/displayPayment method)
+    private void printHeader() {
+        System.out.println("-----------------------------------------------------------------------------------");
+        System.out.printf("%-12s %-10s %-25s %-20s %12s%n",
+                "Date", "Time", "Description", "Vendor", "Amount");
+        System.out.println("-----------------------------------------------------------------------------------");
+    }
+
+    // Method: Print transactions in an output format (under displayAll/displayDeposits/displayPayment method)
+    private void printTransaction(Transaction transaction) {
+        System.out.printf("%-12s %-10s %-25s %-20s $%10.2f%n",
+                transaction.getDate(), transaction.getTime(), transaction.getDescription(), transaction.getVendor(), transaction.getAmount());
+    }
+
+
 }
