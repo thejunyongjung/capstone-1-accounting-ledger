@@ -3,6 +3,7 @@ package com.pluralsight;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -209,7 +210,7 @@ public class LedgerApp {
                     displayPayments();
                     break;
                 case "R":
-                    System.out.println("Reports - coming soon!");
+                    reportsScreen();
                     break;
                 case "H":
                     inLedger = false;
@@ -260,7 +261,7 @@ public class LedgerApp {
         }
     }
 
-    // Method: Display transaction header (under displayAll/displayDeposits/displayPayment method)
+    // Method: Display transaction header
     private void printHeader() {
         System.out.println("-----------------------------------------------------------------------------------");
         System.out.printf("%-12s %-10s %-25s %-20s %12s%n",
@@ -268,11 +269,176 @@ public class LedgerApp {
         System.out.println("-----------------------------------------------------------------------------------");
     }
 
-    // Method: Print transactions in an output format (under displayAll/displayDeposits/displayPayment method)
+    // Method: Print transactions in an output format
     private void printTransaction(Transaction transaction) {
+        DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
         System.out.printf("%-12s %-10s %-25s %-20s $%10.2f%n",
-                transaction.getDate(), transaction.getTime(), transaction.getDescription(), transaction.getVendor(), transaction.getAmount());
+                transaction.getDate(), transaction.getTime().format(timeFormat), transaction.getDescription(), transaction.getVendor(), transaction.getAmount());
     }
 
+    // Method: Report Screen (under ledgerScreen Method)
+    private void reportsScreen() {
+        boolean inReports = true;
+        while (inReports) {
+            System.out.println();
+            System.out.println("==============================");
+            System.out.println("Reports");
+            System.out.println("==============================");
+            System.out.println("1) Month To Date");
+            System.out.println("2) Previous Month");
+            System.out.println("3) Year To Date");
+            System.out.println("4) Previous Year");
+            System.out.println("5) Search by Vendor");
+            System.out.println("0) Back");
+            System.out.println("------------------------------");
+            System.out.print("Enter your choice: ");
+            String choice = scanner.nextLine().trim();
 
+            switch (choice) {
+                case "1":
+                    monthToDate();
+                    break;
+                case "2":
+                    previousMonth();
+                    break;
+                case "3":
+                    yearToDate();
+                    break;
+                case "4":
+                    previousYear();
+                    break;
+                case "5":
+                    searchByVendor();
+                    break;
+                case "0":
+                    inReports = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again!");
+                    break;
+            }
+        }
+    }
+
+    // Method: Display Month-to-Date Report (under reportScreen method)
+    private void monthToDate() {
+        System.out.println();
+        System.out.println("===================================================================================");
+        System.out.println("Month To Date");
+        printHeader();
+
+        LocalDate today = LocalDate.now();
+
+        int count = 0;
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            Transaction transaction = transactions.get(i);
+            LocalDate transactionDate = transaction.getDate();
+
+            if (transactionDate.getYear() == today.getYear() &&
+                    transactionDate.getMonth() == today.getMonth()) {
+                printTransaction(transaction);
+                count++;
+            }
+        }
+        if (count == 0) {
+            System.out.println("No transactions found!");
+        }
+    }
+
+    // Method: Display Previous Month Report (under reportScreen method)
+    private void previousMonth() {
+        System.out.println();
+        System.out.println("===================================================================================");
+        System.out.println("Previous Month");
+        printHeader();
+
+        LocalDate lastMonth = LocalDate.now().minusMonths(1);
+
+        int count = 0;
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            Transaction transaction = transactions.get(i);
+            LocalDate transactionDate = transaction.getDate();
+
+            if (transactionDate.getYear() == lastMonth.getYear() &&
+                    transactionDate.getMonth() == lastMonth.getMonth()) {
+                printTransaction(transaction);
+                count++;
+            }
+        }
+        if (count == 0) {
+            System.out.println("No transactions found in previous month!");
+        }
+    }
+
+    // Method: Display Year-to-Date Report (under reportScreen method)
+    private void yearToDate() {
+        System.out.println();
+        System.out.println("===================================================================================");
+        System.out.println("Year To Date");
+        printHeader();
+
+        LocalDate today = LocalDate.now();
+
+        int count = 0;
+        for (int i = transactions.size()-1; i >= 0; i--) {
+            Transaction transaction = transactions.get(i);
+            LocalDate transactionDate = transaction.getDate();
+
+            if (transactionDate.getYear() == today.getYear()) {
+                printTransaction(transaction);
+                count++;
+            }
+        }
+        if (count == 0) {
+            System.out.println("No transactions found!");
+        }
+    }
+
+    // Method: Display Previous Year Report (under reportScreen method)
+    private void previousYear() {
+        System.out.println();
+        System.out.println("===================================================================================");
+        System.out.println("Previous Year");
+        printHeader();
+
+        LocalDate lastYear = LocalDate.now().minusYears(1);
+
+        int count = 0;
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            Transaction transaction = transactions.get(i);
+            LocalDate transactionDate = transaction.getDate();
+
+            if (transactionDate.getYear() == lastYear.getYear()) {
+                printTransaction(transaction);
+            }
+        }
+        if (count == 0) {
+            System.out.println("No transactions found in previous year!");
+        }
+    }
+
+    // Method: Display Report by Vendor (under reportScreen method)
+    private void searchByVendor() {
+        System.out.println();
+        System.out.print("Enter vendor: ");
+        String vendor = scanner.nextLine().trim();
+
+        System.out.println("===================================================================================");
+        System.out.println("Search Results for " + vendor);
+        printHeader();
+
+        int count = 0;
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            Transaction transaction = transactions.get(i);
+            if (transaction.getVendor().equalsIgnoreCase(vendor)) {
+                printTransaction(transaction);
+                count++;
+            }
+        }
+
+        if (count == 0) {
+            System.out.println("No matching transactions found for vendor: " + vendor);
+        }
+
+    }
 }
