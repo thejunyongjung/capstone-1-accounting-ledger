@@ -105,7 +105,7 @@ public class LedgerApp {
             System.out.println("  " + BLUE + "L" + RESET + ") Ledger");
             System.out.println("  " + YELLOW + "X" + RESET + ") Exit");
             System.out.println("  ──────────────────────────────");
-            ;
+
             System.out.print("Enter your choice: ");
             String choice = scanner.nextLine().trim().toUpperCase();
 
@@ -151,9 +151,7 @@ public class LedgerApp {
         System.out.print("Enter vendor: ");
         String vendor = scanner.nextLine().trim();
 
-        System.out.print("Enter amount: ");
-        double amount = Math.abs(scanner.nextDouble());
-        scanner.nextLine();
+        double amount = promptAmount(true);
 
         // Create a new transaction object for deposit
         Transaction deposit = new Transaction(date, time, description, vendor, amount);
@@ -184,9 +182,7 @@ public class LedgerApp {
         System.out.print("Enter vendor: ");
         String vendor = scanner.nextLine().trim();
 
-        System.out.print("Enter amount: ");
-        double amount = -Math.abs(scanner.nextDouble());
-        scanner.nextLine();
+        double amount = promptAmount(false);
 
         // Create a new transaction object for payment
         Transaction payment = new Transaction(date, time, description, vendor, amount);
@@ -220,6 +216,26 @@ public class LedgerApp {
         System.out.println("  Vendor:      " + _transaction.getVendor());
         System.out.printf("  Amount:      %s$%,.2f%s%n", _color, _transaction.getAmount(), RESET);
         System.out.println("  ──────────────────────────────");
+    }
+
+    // Method: PROMPT USER FOR A VALID AMOUNT (UNDER 'addDeposit', 'makePayment' METHOD)
+    private double promptAmount(boolean _isDeposit) {
+        double amount = 0;
+        boolean validAmount = false;
+
+        while (!validAmount) {
+            System.out.print("Enter amount: ");
+            amount = Math.abs(Double.parseDouble(scanner.nextLine().trim()));
+
+            // Handling zero-amount transaction
+            if (amount == 0) {
+                System.out.println(YELLOW + "Amount cannot be zero. Please try again!" + RESET);
+            } else {
+                validAmount = true;
+            }
+        }
+        // For Payment, return as negative
+        return _isDeposit ? amount : -amount;
     }
 
     /** ===== LEDGER SCREEN ===== */
@@ -477,23 +493,24 @@ public class LedgerApp {
         }
 
         // Output
-        System.out.printf("%-12s %-10s %-25s %-20s $%10.2f%n",
+        System.out.printf("%-12s %-10s %-25s %-20s %s$%10.2f%s%n",
                 _transaction.getDate(),
                 _transaction.getTime().format(TIME_FORMAT),
-                _transaction.getDescription(),
-                _transaction.getVendor(),
-                _transaction.getAmount());
+                description,
+                vendor,
+                amountColor,
+                _transaction.getAmount(), RESET);
     }
 
     // METHOD: DISPLAY PRINT FOOTER
-    private void printFooter(int count) {
+    private void printFooter(int _count) {
         System.out.println("───────────────────────────────────────────────────────────────────────────────────");
-        if (count == 0) {
+        if (_count == 0) {
             System.out.println(YELLOW + "  No transactions found." + RESET);
-        } else if (count == 1) {
-            System.out.println(CYAN + "  Total: " + count + " transaction" + RESET);
+        } else if (_count == 1) {
+            System.out.println(CYAN + "  Total: " + _count + " transaction" + RESET);
         } else {
-            System.out.println(CYAN + "  Total: " + count + " transactions" + RESET);
+            System.out.println(CYAN + "  Total: " + _count + " transactions" + RESET);
         }
     }
 }
