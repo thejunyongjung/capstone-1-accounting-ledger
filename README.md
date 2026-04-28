@@ -26,7 +26,7 @@ interface to view, filter, and search through transaction history with various r
 ### Steps
 1. Clone this repository:
 ```bash
-   git clone https://github.com/thejunyongjung/accounting-ledger.git
+   git clone https://github.com/thejunyongjung/capstone-1-accounting-ledger.git
 ```
 2. Open the project in IntelliJ IDEA
 3. Run `Main.java`
