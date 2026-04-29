@@ -27,9 +27,5 @@ date|time|description|vendor|amount
 2026-04-25|15:30:00|Online shopping|Amazon|-234.56
 2026-04-27|11:00:00|Freelance payment|Client B|1200.00
 2026-04-28|13:45:00|Coffee|Starbucks|-6.50
-2026-04-29|10:20:45|Edge case test|EdgeCorp|50.00
-2026-04-29|10:21:22|Negative test|TestStore|-99.99
-2026-04-29|10:23:45|||50.00
-2026-04-29|10:25:12|'coffee|phillz|7.00
-2026-04-29|10:25:58|This is a very very very long description that should be truncated when displayed|LongVendorNameThatExceedsLimit|25.00
-2026-04-29|10:27:10|Decimal test|DecimalCorp|101.00
+
+

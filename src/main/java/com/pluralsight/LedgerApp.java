@@ -1,8 +1,7 @@
 package com.pluralsight;
 
 import java.io.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -28,10 +27,12 @@ public class LedgerApp {
     private static final String BLUE = "\u001B[34m";
     private static final String PURPLE = "\u001B[35m";
     private static final String BR_CYAN = "\u001B[96m";
+    private static final String BR_MAGENTA = "\u001B[95m";
 
-    // DEFINE THINGS NEEDED AT CLASS LEVEL
+    // DEFINE CONSTANT NEEDED AT A CLASS LEVEL
     private static final String CSV_FILE = "transactions.csv";
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private static final double AMOUNT_BUFFER = 5.0;
 
     // METHOD: ===== APP START =====
     public void run() {
@@ -214,7 +215,7 @@ public class LedgerApp {
         System.out.println("  ──────────────────────────────");
     }
 
-    // METHOD: PROMPT USER FOR A VALID INPUT (UNDER 'addDeposit', 'makePayment' METHOD)
+    // METHOD: PROMPT USER FOR A VALID INPUT (UNDER 'addDeposit', 'makePayment', 'searchByVendor', BONUS METHOD)
     private String promptString(String _fieldName) {
         String input = "";
         boolean validIput = false;
@@ -450,10 +451,10 @@ public class LedgerApp {
         printFooter(count);
     }
 
-    // METHOD: DISPLAY REPORT BY VENDOR (UNDER 'reportScreen' METHOD)
+    // METHOD: DISPLAY REPORT BY VENDOR (UNDER 'reportScreen', 'customSearch (BONUS)' METHOD)
     private void searchByVendor() {
         System.out.println();
-        String vendor = promptString("vendor");
+        String vendor = promptString("Vendor");
 
         printSectionHeader("Search Results for: " + vendor, PURPLE);
         printHeader();
@@ -469,9 +470,73 @@ public class LedgerApp {
         printFooter(count);
     }
 
-    // ===== BONUS: CUSTOM SEARCH =====
+    /** ===== BONUS: CUSTOM SEARCH ===== */
+    // BONUS METHOD: CUSTOM SEARCH BY DIFFERENT USER INPUT
     private void customSearch() {
         System.out.println();
+        System.out.println(BR_MAGENTA + "╔══════════════════════════════╗");
+        System.out.println("║       CUSTOM SEARCH          ║");
+        System.out.println("╚══════════════════════════════╝" + RESET);
+        System.out.println("  Type fields to filter,");
+        System.out.println("  or press Enter to skip");
+        System.out.println("  ────────────────────────────");
+
+        // Get 5 inputs from the user
+        String startDateInput = promptOptional("Start Date (YYYY-MM-DD)");
+        String endDateInput = promptOptional("End Date (YYYY-MM-DD)");
+        String descriptionInput = promptOptional("Description");
+        String vendorInput = promptOptional("Vendor");
+        String amountInput = promptOptional("Amount (+/- $5)");
+
+        // Convert dates and amount (used 'Double' class to store null)
+        LocalDate startDate = startDateInput.isEmpty() ? null : LocalDate.parse(startDateInput);
+        LocalDate endDate = endDateInput.isEmpty() ? null : LocalDate.parse(endDateInput);
+        Double amount = amountInput.isEmpty() ? null : Double.parseDouble(amountInput);
+
+        printSectionHeader("Custom Search Results", BR_MAGENTA);
+        printHeader();
+
+        int count = 0;
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            Transaction t = transactions.get(i);
+
+            // ===== FILTER 1: START DATE =====
+            if (startDate != null) {
+                if (t.getDate().isBefore(startDate)) continue;
+            }
+
+            // ===== FILTER 2: END DATE =====
+            if (endDate != null) {
+                if (t.getDate().isAfter(endDate)) continue;
+            }
+
+            // ===== FILTER 3: DESCRIPTION =====
+            if (!descriptionInput.isEmpty()) {
+                if (!t.getDescription().toLowerCase()
+                        .contains(descriptionInput.toLowerCase())) continue;
+            }
+
+            // ===== FILTER 4: VENDOR =====
+            if (!vendorInput.isEmpty()) {
+                if (!t.getVendor().toLowerCase()
+                        .contains(vendorInput.toLowerCase())) continue;
+            }
+
+            // ===== FILTER 5: AMOUNT =====
+            if (amount != null) {
+                if (Math.abs(t.getAmount() - amount) > AMOUNT_BUFFER) continue;
+            }
+            printTransaction(t);
+            count++;
+        }
+        printFooter(count);
+    }
+
+    // BONUS HELPER METHOD: ACCEPTS EMPTY INPUT AS "SKIP"
+    private String promptOptional(String _fieldName) {
+        System.out.println();
+        System.out.print("  Enter " + _fieldName + " [Press Enter to skip]: ");
+        return scanner.nextLine().trim();
     }
 
     /** ===== DISPLAY HELPERS ===== */
