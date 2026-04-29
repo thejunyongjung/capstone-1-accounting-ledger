@@ -100,13 +100,13 @@ public class LedgerApp {
             System.out.println(CYAN + "╔══════════════════════════════╗");
             System.out.println("║         HOME SCREEN          ║");
             System.out.println("╚══════════════════════════════╝" + RESET);
-            System.out.println(" " + GREEN + "D" + RESET + ") Add Deposit");
+            System.out.println("  " + GREEN + "D" + RESET + ") Add Deposit");
             System.out.println("  " + RED + "P" + RESET + ") Make Payment (Debit)");
             System.out.println("  " + BLUE + "L" + RESET + ") Ledger");
             System.out.println("  " + YELLOW + "X" + RESET + ") Exit");
-            System.out.println("  ──────────────────────────────");
+            System.out.println("  ────────────────────────────");
 
-            System.out.print("Enter your choice: ");
+            System.out.print("  Enter your choice: ");
             String choice = scanner.nextLine().trim().toUpperCase();
 
             switch (choice) {
@@ -121,12 +121,12 @@ public class LedgerApp {
                     break;
                 case "X":
                     System.out.println();
-                    System.out.println(BR_CYAN + "Exiting the Application..." + RESET);
+                    System.out.println(BR_CYAN + "  Exiting the Application..." + RESET);
                     running = false;
                     break;
                 default:
                     System.out.println();
-                    System.out.println(YELLOW + "Invalid choice. Try again!" + RESET);
+                    System.out.println(YELLOW + "  Invalid choice. Try again!" + RESET);
                     break;
             }
         }
@@ -145,11 +145,9 @@ public class LedgerApp {
         LocalTime time = LocalTime.now().withNano(0);
 
         // Description | Vendor | Amount - User Input
-        System.out.print("Enter description: ");
-        String description = scanner.nextLine().trim();
+        String description = promptString("description");
 
-        System.out.print("Enter vendor: ");
-        String vendor = scanner.nextLine().trim();
+        String vendor = promptString("vendor");
 
         double amount = promptAmount(true);
 
@@ -161,7 +159,7 @@ public class LedgerApp {
 
         // Save & Print Deposit Transaction
         saveTransaction(deposit);
-        printConfirmation("💵 Deposit added successfully! 💵", deposit, GREEN);
+        printConfirmation("Deposit added successfully! 💵", deposit, GREEN);
     }
 
     // METHOD: MAKE PAYMENT (UNDER 'homeScreen' METHOD)
@@ -176,11 +174,9 @@ public class LedgerApp {
         LocalTime time = LocalTime.now().withNano(0);
 
         // Description | Vendor | Amount - User Input
-        System.out.print("Enter description: ");
-        String description = scanner.nextLine().trim();
+        String description = promptString("description");
 
-        System.out.print("Enter vendor: ");
-        String vendor = scanner.nextLine().trim();
+        String vendor = promptString("vendor");
 
         double amount = promptAmount(false);
 
@@ -192,7 +188,7 @@ public class LedgerApp {
 
         // Save & Print Payment Transaction
         saveTransaction(payment);
-        printConfirmation("Payment recorded successfully!", payment, RED);
+        printConfirmation("Payment recorded successfully! 💸", payment, RED);
     }
 
     /** ===== HELPER METHOD ===== */
@@ -201,14 +197,14 @@ public class LedgerApp {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(CSV_FILE, true))) {
             bw.write(_transaction.toCsvString() + "\n");
         } catch (IOException e) {
-            System.out.println(RED + "Error saving transaction! " + e.getMessage() + RESET);
+            System.out.println(RED + "  Error saving transaction! " + e.getMessage() + RESET);
         }
     }
 
     // METHOD: PRINT CONFIRMATION FOR USER (UNDER 'addDeposit', 'makePayment' METHOD)
     private void printConfirmation(String _title, Transaction _transaction, String _color) {
         System.out.println();
-        System.out.println(_color + BOLD + "✓ " + _title + RESET);
+        System.out.println(_color + BOLD + "  ✓ " + _title + RESET);
         System.out.println("  ──────────────────────────────");
         System.out.println("  Date:        " + _transaction.getDate());
         System.out.println("  Time:        " + _transaction.getTime().format(TIME_FORMAT));
@@ -218,18 +214,36 @@ public class LedgerApp {
         System.out.println("  ──────────────────────────────");
     }
 
+    // METHOD: PROMPT USER FOR A VALID INPUT (UNDER 'addDeposit', 'makePayment' METHOD)
+    private String promptString(String _fieldName) {
+        String input = "";
+        boolean validIput = false;
+
+        while (!validIput) {
+            System.out.print("  Enter " + _fieldName + ": ");
+            input = scanner.nextLine().trim();
+
+            if (input.isEmpty()) {
+                System.out.println(YELLOW + "  '" + _fieldName + "' can't be empty or blank. Please try again!" + RESET);
+            } else {
+                validIput = true;
+            }
+        }
+        return input;
+    }
+
     // Method: PROMPT USER FOR A VALID AMOUNT (UNDER 'addDeposit', 'makePayment' METHOD)
     private double promptAmount(boolean _isDeposit) {
         double amount = 0;
         boolean validAmount = false;
 
         while (!validAmount) {
-            System.out.print("Enter amount: ");
+            System.out.print("  Enter amount: ");
             amount = Math.abs(Double.parseDouble(scanner.nextLine().trim()));
 
             // Handling zero-amount transaction
             if (amount == 0) {
-                System.out.println(YELLOW + "Amount cannot be zero. Please try again!" + RESET);
+                System.out.println(YELLOW + "  Amount cannot be zero. Please try again!" + RESET);
             } else {
                 validAmount = true;
             }
@@ -252,8 +266,8 @@ public class LedgerApp {
             System.out.println("  " + RED + "P" + RESET + ") Payments Only");
             System.out.println("  " + PURPLE + "R" + RESET + ") Reports");
             System.out.println("  " + YELLOW + "H" + RESET + ") Home");
-            System.out.println("  ──────────────────────────────");
-            System.out.print("Enter your choice: ");
+            System.out.println("  ────────────────────────────");
+            System.out.print("  Enter your choice: ");
             String choice = scanner.nextLine().trim().toUpperCase();
 
             switch (choice) {
@@ -273,7 +287,7 @@ public class LedgerApp {
                     inLedger = false;
                     break;
                 default:
-                    System.out.println("Invalid choice. Try again!");
+                    System.out.println("  Invalid choice. Try again!");
                     break;
             }
         }
@@ -340,8 +354,8 @@ public class LedgerApp {
             System.out.println("  5) Search by Vendor");
             System.out.println("  6) Custom Search " + CYAN + "(NEW!)" + RESET);
             System.out.println("  0) Back");
-            System.out.println("  ──────────────────────────────");
-            System.out.print("Enter your choice: ");
+            System.out.println("  ────────────────────────────");
+            System.out.print("  Enter your choice: ");
             String choice = scanner.nextLine().trim();
 
             switch (choice) {
@@ -353,7 +367,7 @@ public class LedgerApp {
                 case "6": customSearch(); break;
                 case "0": inReports = false; break;
                 default:
-                    System.out.println(YELLOW + "Invalid choice. Try again!" + RESET);
+                    System.out.println(YELLOW + "  Invalid choice. Try again!" + RESET);
                     break;
             }
         }
@@ -439,8 +453,7 @@ public class LedgerApp {
     // METHOD: DISPLAY REPORT BY VENDOR (UNDER 'reportScreen' METHOD)
     private void searchByVendor() {
         System.out.println();
-        System.out.print("Enter vendor: ");
-        String vendor = scanner.nextLine().trim();
+        String vendor = promptString("vendor");
 
         printSectionHeader("Search Results for: " + vendor, PURPLE);
         printHeader();
@@ -473,7 +486,7 @@ public class LedgerApp {
     // METHOD: DISPLAY TRANSACTION HEADER
     private void printHeader() {
         System.out.println("───────────────────────────────────────────────────────────────────────────────────");
-        System.out.printf(BOLD + "%-12s %-10s %-25s %-20s %12s%n" + RESET,
+        System.out.printf(BOLD + "%-12s %-10s %-25s %-20s %-12s%n" + RESET,
                 "Date", "Time", "Description", "Vendor", "Amount");
         System.out.println("───────────────────────────────────────────────────────────────────────────────────");
     }
