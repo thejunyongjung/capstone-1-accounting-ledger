@@ -3,6 +3,7 @@ package com.pluralsight;
 import java.io.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -92,7 +93,9 @@ public class LedgerApp {
         }
     }
 
-    /** ===== HOMESCREEN ===== */
+    /**
+     * ===== HOMESCREEN =====
+     */
     // METHOD: HOMESCREEN (UNDER 'run' METHOD)
     private void homeScreen() {
         boolean running = true;
@@ -192,7 +195,9 @@ public class LedgerApp {
         printConfirmation("Payment recorded successfully! 💸", payment, RED);
     }
 
-    /** ===== HELPER METHOD ===== */
+    /**
+     * ===== HELPER METHOD =====
+     */
     // METHOD: SAVE TRANSACTION (UNDER 'addDeposit', 'makePayment' METHOD)
     private void saveTransaction(Transaction _transaction) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(CSV_FILE, true))) {
@@ -218,16 +223,16 @@ public class LedgerApp {
     // METHOD: PROMPT USER FOR A VALID INPUT (UNDER 'addDeposit', 'makePayment', 'searchByVendor', BONUS METHOD)
     private String promptString(String _fieldName) {
         String input = "";
-        boolean validIput = false;
+        boolean validInput = false;
 
-        while (!validIput) {
+        while (!validInput) {
             System.out.print("  Enter " + _fieldName + ": ");
             input = scanner.nextLine().trim();
 
             if (input.isEmpty()) {
                 System.out.println(YELLOW + "  '" + _fieldName + "' can't be empty or blank. Please try again!" + RESET);
             } else {
-                validIput = true;
+                validInput = true;
             }
         }
         return input;
@@ -235,25 +240,31 @@ public class LedgerApp {
 
     // Method: PROMPT USER FOR A VALID AMOUNT (UNDER 'addDeposit', 'makePayment' METHOD)
     private double promptAmount(boolean _isDeposit) {
-        double amount = 0;
-        boolean validAmount = false;
-
-        while (!validAmount) {
+        while (true) {
             System.out.print("  Enter amount: ");
-            amount = Math.abs(Double.parseDouble(scanner.nextLine().trim()));
+            String amountInput = scanner.nextLine().trim();
 
-            // Handling zero-amount transaction
-            if (amount == 0) {
-                System.out.println(YELLOW + "  Amount cannot be zero. Please try again!" + RESET);
-            } else {
-                validAmount = true;
+            try {
+                double amount = Math.abs(Double.parseDouble(amountInput));
+
+                // Handling zero-amount transaction
+                if (amount == 0) {
+                    System.out.println(YELLOW + "  Amount can't be zero. Please try again!" + RESET);
+                    continue;
+                }
+
+                // For Payment, return as negative
+                return _isDeposit ? amount : -amount;
+
+            } catch (NumberFormatException e) {
+                System.out.println(YELLOW + "  Amount must be numeric. Please enter valid amount" + RESET);
             }
         }
-        // For Payment, return as negative
-        return _isDeposit ? amount : -amount;
     }
 
-    /** ===== LEDGER SCREEN ===== */
+    /**
+     * ===== LEDGER SCREEN =====
+     */
     // METHOD: LEDGER SCREEN (UNDER 'homeScreen' METHOD)
     private void ledgerScreen() {
         boolean inLedger = true;
@@ -339,7 +350,9 @@ public class LedgerApp {
         printFooter(count);
     }
 
-    /** ===== REPORTS SCREEN ===== */
+    /**
+     * ===== REPORTS SCREEN =====
+     */
     // METHOD: REPORTS SCREEN (UNDER 'ledgerScreen' METHOD)
     private void reportsScreen() {
         boolean inReports = true;
@@ -360,13 +373,27 @@ public class LedgerApp {
             String choice = scanner.nextLine().trim();
 
             switch (choice) {
-                case "1": monthToDate(); break;
-                case "2": previousMonth(); break;
-                case "3": yearToDate(); break;
-                case "4": previousYear(); break;
-                case "5": searchByVendor(); break;
-                case "6": customSearch(); break;
-                case "0": inReports = false; break;
+                case "1":
+                    monthToDate();
+                    break;
+                case "2":
+                    previousMonth();
+                    break;
+                case "3":
+                    yearToDate();
+                    break;
+                case "4":
+                    previousYear();
+                    break;
+                case "5":
+                    searchByVendor();
+                    break;
+                case "6":
+                    customSearch();
+                    break;
+                case "0":
+                    inReports = false;
+                    break;
                 default:
                     System.out.println(YELLOW + "  Invalid choice. Try again!" + RESET);
                     break;
@@ -470,7 +497,9 @@ public class LedgerApp {
         printFooter(count);
     }
 
-    /** ===== BONUS: CUSTOM SEARCH ===== */
+    /**
+     * ===== BONUS: CUSTOM SEARCH =====
+     */
     // BONUS METHOD: CUSTOM SEARCH BY DIFFERENT USER INPUT
     private void customSearch() {
         System.out.println();
@@ -481,17 +510,12 @@ public class LedgerApp {
         System.out.println("  or press Enter to skip");
         System.out.println("  ────────────────────────────");
 
-        // Get 5 inputs from the user
-        String startDateInput = promptOptional("Start Date (YYYY-MM-DD)");
-        String endDateInput = promptOptional("End Date (YYYY-MM-DD)");
-        String descriptionInput = promptOptional("Description");
-        String vendorInput = promptOptional("Vendor");
-        String amountInput = promptOptional("Amount (+/- $5)");
-
-        // Convert dates and amount (used 'Double' class to store null)
-        LocalDate startDate = startDateInput.isEmpty() ? null : LocalDate.parse(startDateInput);
-        LocalDate endDate = endDateInput.isEmpty() ? null : LocalDate.parse(endDateInput);
-        Double amount = amountInput.isEmpty() ? null : Double.parseDouble(amountInput);
+        // Get 5 inputs from the user (helpers handle parsing & error checking)
+        LocalDate startDate = promptBonusDate("Start Date (YYYY-MM-DD)");
+        LocalDate endDate = promptBonusDate("End Date (YYYY-MM-DD)");
+        String descriptionInput = promptBonus("Description");
+        String vendorInput = promptBonus("Vendor");
+        Double amount = promptBonusDouble("Amount (+/- $5)");
 
         printSectionHeader("Custom Search Results", BR_MAGENTA);
         printHeader();
@@ -533,13 +557,47 @@ public class LedgerApp {
     }
 
     // BONUS HELPER METHOD: ACCEPTS EMPTY INPUT AS "SKIP"
-    private String promptOptional(String _fieldName) {
+    private String promptBonus(String _fieldName) {
         System.out.println();
         System.out.print("  Enter " + _fieldName + " [Press Enter to skip]: ");
         return scanner.nextLine().trim();
     }
 
-    /** ===== DISPLAY HELPERS ===== */
+    // BONUS HELPER METHOD: PROMPT FOR DATE WITH ERROR HANDLING
+    private LocalDate promptBonusDate(String _fieldName) {
+        while (true) {
+            String input = promptBonus(_fieldName);
+
+            if (input.isEmpty()) {
+                return null;
+            }
+            try {
+                return LocalDate.parse(input);
+            } catch (DateTimeParseException e) {
+                System.out.println(YELLOW + "  Invalid date format. Please use YYYY-MM-DD." + RESET);
+            }
+        }
+    }
+
+    // BONUS HELPER METHOD: PROMPT FOR DOUBLE WITH ERROR HANDLING
+    private Double promptBonusDouble(String _fieldName) {
+        while (true) {
+            String input = promptBonus(_fieldName);
+
+            if (input.isEmpty()) {
+                return null;
+            }
+            try {
+                return Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.println(YELLOW + "  Invalid number. Please enter a number." + RESET);
+            }
+        }
+    }
+
+    /**
+     * ===== DISPLAY HELPERS =====
+     */
     // METHOD: DISPLAY SECTION HEADER
     private void printSectionHeader(String _title, String _color) {
         System.out.println();
