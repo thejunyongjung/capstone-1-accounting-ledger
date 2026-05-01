@@ -29,6 +29,7 @@ public class LedgerApp {
     private static final String PURPLE = "\u001B[35m";
     private static final String BR_CYAN = "\u001B[96m";
     private static final String BR_MAGENTA = "\u001B[95m";
+    private static final String BR_WHITE = "\u001B[97m";
 
     // DEFINE CONSTANT NEEDED AT A CLASS LEVEL
     private static final String CSV_FILE = "transactions.csv";
@@ -64,7 +65,7 @@ public class LedgerApp {
     }
 
     // METHOD: ===== FILE I/O ===== (UNDER 'run' METHOD)
-    public void loadTransactions() {
+    private void loadTransactions() {
         try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE))) {
             String line;
 
@@ -101,14 +102,20 @@ public class LedgerApp {
         boolean running = true;
         while (running) {
             System.out.println();
-            System.out.println(CYAN + "╔══════════════════════════════╗");
-            System.out.println("║         HOME SCREEN          ║");
-            System.out.println("╚══════════════════════════════╝" + RESET);
+            System.out.println(CYAN + "  ╔══════════════════════════════╗");
+            System.out.println("  ║         HOME SCREEN          ║");
+            System.out.println("  ╚══════════════════════════════╝" + RESET);
+            double totalBalance = calculateTotalBalance();
+            String balanceColor = totalBalance >= 0 ? GREEN : RED;
+            String statusEmoji = totalBalance >= 0 ? "📈" : "📉";
+            System.out.printf("  %s Current Balance: %s$%,.2f%s%n", statusEmoji, balanceColor, totalBalance, RESET);
+            System.out.println("  📊 " + transactions.size() + " transactions tracked");
+            System.out.println("  ────────────────────────────────");
             System.out.println("  " + GREEN + "D" + RESET + ") Add Deposit");
             System.out.println("  " + RED + "P" + RESET + ") Make Payment (Debit)");
             System.out.println("  " + BLUE + "L" + RESET + ") Ledger");
             System.out.println("  " + YELLOW + "X" + RESET + ") Exit");
-            System.out.println("  ────────────────────────────");
+            System.out.println("  ────────────────────────────────");
 
             System.out.print("  Enter your choice: ");
             String choice = scanner.nextLine().trim().toUpperCase();
@@ -129,7 +136,6 @@ public class LedgerApp {
                     running = false;
                     break;
                 default:
-                    System.out.println();
                     System.out.println(YELLOW + "  Invalid choice. Try again!" + RESET);
                     break;
             }
@@ -140,9 +146,9 @@ public class LedgerApp {
     // METHOD: ADD DEPOSIT (UNDER 'homeScreen' METHOD)
     private void addDeposit() {
         System.out.println();
-        System.out.println(GREEN + "══════════════════════════════");
-        System.out.println("        ADD DEPOSIT");
-        System.out.println("══════════════════════════════" + RESET);
+        System.out.println(GREEN + "  ══════════════════════════════");
+        System.out.println("            ADD DEPOSIT");
+        System.out.println("  ══════════════════════════════" + RESET);
 
         // Date | Time - Automatically
         LocalDate date = LocalDate.now();
@@ -169,9 +175,9 @@ public class LedgerApp {
     // METHOD: MAKE PAYMENT (UNDER 'homeScreen' METHOD)
     private void makePayment() {
         System.out.println();
-        System.out.println(RED + "══════════════════════════════");
-        System.out.println("       MAKE PAYMENT");
-        System.out.println("══════════════════════════════" + RESET);
+        System.out.println(RED + "  ══════════════════════════════");
+        System.out.println("           MAKE PAYMENT");
+        System.out.println("  ══════════════════════════════" + RESET);
 
         // Date | Time - Automatically
         LocalDate date = LocalDate.now();
@@ -211,13 +217,13 @@ public class LedgerApp {
     private void printConfirmation(String _title, Transaction _transaction, String _color) {
         System.out.println();
         System.out.println(_color + BOLD + "  ✓ " + _title + RESET);
-        System.out.println("  ──────────────────────────────");
+        System.out.println("  ────────────────────────────────");
         System.out.println("  Date:        " + _transaction.getDate());
         System.out.println("  Time:        " + _transaction.getTime().format(TIME_FORMAT));
         System.out.println("  Description: " + _transaction.getDescription());
         System.out.println("  Vendor:      " + _transaction.getVendor());
         System.out.printf("  Amount:      %s$%,.2f%s%n", _color, _transaction.getAmount(), RESET);
-        System.out.println("  ──────────────────────────────");
+        System.out.println("  ────────────────────────────────");
     }
 
     // METHOD: PROMPT USER FOR A VALID INPUT (UNDER 'addDeposit', 'makePayment', 'searchByVendor', BONUS METHOD)
@@ -257,9 +263,18 @@ public class LedgerApp {
                 return _isDeposit ? amount : -amount;
 
             } catch (NumberFormatException e) {
-                System.out.println(YELLOW + "  Amount must be numeric. Please enter valid amount" + RESET);
+                System.out.println(YELLOW + "  Amount must be numeric. Please enter valid amount!" + RESET);
             }
         }
+    }
+
+    // METHOD: DISPLAY TOTAL BALANCE FROM ALL TRANSACTIONS IN HOMESCREEN (UNDER 'homeScreen' METHOD)
+    private double calculateTotalBalance() {
+        double totalBalance = 0;
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            totalBalance += transactions.get(i).getAmount();
+        }
+        return totalBalance;
     }
 
     /**
@@ -270,15 +285,15 @@ public class LedgerApp {
         boolean inLedger = true;
         while (inLedger) {
             System.out.println();
-            System.out.println(BLUE + "╔══════════════════════════════╗");
-            System.out.println("║        LEDGER SCREEN         ║");
-            System.out.println("╚══════════════════════════════╝" + RESET);
+            System.out.println(BLUE + "  ╔══════════════════════════════╗");
+            System.out.println("  ║        LEDGER SCREEN         ║");
+            System.out.println("  ╚══════════════════════════════╝" + RESET);
             System.out.println("  " + CYAN + "A" + RESET + ") All Transactions");
             System.out.println("  " + GREEN + "D" + RESET + ") Deposits Only");
             System.out.println("  " + RED + "P" + RESET + ") Payments Only");
             System.out.println("  " + PURPLE + "R" + RESET + ") Reports");
             System.out.println("  " + YELLOW + "H" + RESET + ") Home");
-            System.out.println("  ────────────────────────────");
+            System.out.println("  ────────────────────────────────");
             System.out.print("  Enter your choice: ");
             String choice = scanner.nextLine().trim().toUpperCase();
 
@@ -299,7 +314,7 @@ public class LedgerApp {
                     inLedger = false;
                     break;
                 default:
-                    System.out.println("  Invalid choice. Try again!");
+                    System.out.println(YELLOW + "  Invalid choice. Try again!" + RESET);
                     break;
             }
         }
@@ -358,9 +373,9 @@ public class LedgerApp {
         boolean inReports = true;
         while (inReports) {
             System.out.println();
-            System.out.println(PURPLE + "╔══════════════════════════════╗");
-            System.out.println("║          REPORTS             ║");
-            System.out.println("╚══════════════════════════════╝" + RESET);
+            System.out.println(PURPLE + "  ╔══════════════════════════════╗");
+            System.out.println("  ║          REPORTS             ║");
+            System.out.println("  ╚══════════════════════════════╝" + RESET);
             System.out.println("  1) Month To Date");
             System.out.println("  2) Previous Month");
             System.out.println("  3) Year To Date");
@@ -368,7 +383,7 @@ public class LedgerApp {
             System.out.println("  5) Search by Vendor");
             System.out.println("  6) Custom Search " + CYAN + "(NEW!)" + RESET);
             System.out.println("  0) Back");
-            System.out.println("  ────────────────────────────");
+            System.out.println("  ────────────────────────────────");
             System.out.print("  Enter your choice: ");
             String choice = scanner.nextLine().trim();
 
@@ -503,19 +518,25 @@ public class LedgerApp {
     // BONUS METHOD: CUSTOM SEARCH BY DIFFERENT USER INPUT
     private void customSearch() {
         System.out.println();
-        System.out.println(BR_MAGENTA + "╔══════════════════════════════╗");
-        System.out.println("║       CUSTOM SEARCH          ║");
-        System.out.println("╚══════════════════════════════╝" + RESET);
+        System.out.println(BR_MAGENTA + "  ╔══════════════════════════════╗");
+        System.out.println("  ║       CUSTOM SEARCH          ║");
+        System.out.println("  ╚══════════════════════════════╝" + RESET);
         System.out.println("  Type fields to filter,");
         System.out.println("  or press Enter to skip");
-        System.out.println("  ────────────────────────────");
+        System.out.println("  ────────────────────────────────");
 
         // Get 5 inputs from the user (helpers handle parsing & error checking)
         LocalDate startDate = promptBonusDate("Start Date (YYYY-MM-DD)");
         LocalDate endDate = promptBonusDate("End Date (YYYY-MM-DD)");
+
+        System.out.println();
+
         String descriptionInput = promptBonus("Description");
         String vendorInput = promptBonus("Vendor");
-        Double amount = promptBonusDouble("Amount (+/- $5)");
+
+        System.out.println();
+        System.out.println(BOLD + BR_WHITE + "  Amount search has a ±$" + (int) AMOUNT_BUFFER + " buffer. (e.g. 50 → matches 45–55)" + RESET);
+        Double amount = promptBonusDouble("Amount (+/-)");
 
         printSectionHeader("Custom Search Results", BR_MAGENTA);
         printHeader();
@@ -558,8 +579,7 @@ public class LedgerApp {
 
     // BONUS HELPER METHOD: ACCEPTS EMPTY INPUT AS "SKIP"
     private String promptBonus(String _fieldName) {
-        System.out.println();
-        System.out.print("  Enter " + _fieldName + " [Press Enter to skip]: ");
+        System.out.print("  Enter " + BR_WHITE + _fieldName + RESET + " [Press Enter to skip]: ");
         return scanner.nextLine().trim();
     }
 
@@ -590,7 +610,7 @@ public class LedgerApp {
             try {
                 return Double.parseDouble(input);
             } catch (NumberFormatException e) {
-                System.out.println(YELLOW + "  Invalid number. Please enter a number." + RESET);
+                System.out.println(YELLOW + "  Amount must be numeric. Please enter valid amount!" + RESET);
             }
         }
     }
@@ -602,16 +622,16 @@ public class LedgerApp {
     private void printSectionHeader(String _title, String _color) {
         System.out.println();
         System.out.println(_color + BOLD +
-                "═══════════════════════════════════════════════════════════════════════════════════" + RESET);
-        System.out.println(_color + BOLD + "  " + _title + RESET);
+                "  ═══════════════════════════════════════════════════════════════════════════════════" + RESET);
+        System.out.println(_color + BOLD + "    " + _title + RESET);
     }
 
     // METHOD: DISPLAY TRANSACTION HEADER
     private void printHeader() {
-        System.out.println("───────────────────────────────────────────────────────────────────────────────────");
-        System.out.printf(BOLD + "%-12s %-10s %-25s %-20s %-12s%n" + RESET,
+        System.out.println("  ───────────────────────────────────────────────────────────────────────────────────");
+        System.out.printf(BOLD + "  %-12s %-10s %-25s %-20s %-12s%n" + RESET,
                 "Date", "Time", "Description", "Vendor", "Amount");
-        System.out.println("───────────────────────────────────────────────────────────────────────────────────");
+        System.out.println("  ───────────────────────────────────────────────────────────────────────────────────");
     }
 
     // METHOD: PRINT TRANSACTIONS IN A SPECIFIC OUTPUT FORMAT
@@ -629,7 +649,7 @@ public class LedgerApp {
         }
 
         // Output
-        System.out.printf("%-12s %-10s %-25s %-20s %s$%10.2f%s%n",
+        System.out.printf("  %-12s %-10s %-25s %-20s %s$%10.2f%s%n",
                 _transaction.getDate(),
                 _transaction.getTime().format(TIME_FORMAT),
                 description,
@@ -640,7 +660,7 @@ public class LedgerApp {
 
     // METHOD: DISPLAY PRINT FOOTER
     private void printFooter(int _count) {
-        System.out.println("───────────────────────────────────────────────────────────────────────────────────");
+        System.out.println("  ───────────────────────────────────────────────────────────────────────────────────");
         if (_count == 0) {
             System.out.println(YELLOW + "  No transactions found." + RESET);
         } else if (_count == 1) {

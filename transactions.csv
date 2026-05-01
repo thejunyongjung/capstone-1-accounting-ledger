@@ -27,5 +27,6 @@ date|time|description|vendor|amount
 2026-04-25|15:30:00|Online shopping|Amazon|-234.56
 2026-04-27|11:00:00|Freelance payment|Client B|1200.00
 2026-04-28|13:45:00|Coffee|Starbucks|-6.50
-
-
+2026-04-30|15:22:34|Demo Deposit|Test Demo|500.00
+2026-04-30|15:23:36|Demo Payment|Demo Store|-5000.00
+2026-04-30|15:24:07|Demo Payment2|Demo Store2|-40000.00
