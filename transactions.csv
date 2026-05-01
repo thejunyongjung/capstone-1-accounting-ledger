@@ -1,32 +1,31 @@
 date|time|description|vendor|amount
 2024-06-15|10:30:00|Tax refund|IRS|2500.00
 2024-08-22|14:15:30|Birthday gift|Mom|200.00
-2024-12-25|09:45:12|Christmas bonus|Employer|1500.00
-2025-01-10|08:00:00|January Salary|TechCorp|3200.00
+2024-12-25|09:45:12|Holiday bonus|Nvidia|1500.00
+2025-01-10|08:00:00|January Salary|Nvidia|8500.00
 2025-03-14|12:30:45|Lunch meeting|Olive Garden|-45.50
 2025-06-20|18:22:10|Concert tickets|Ticketmaster|-180.00
 2025-09-05|11:11:11|Freelance project|Client A|750.00
-2025-11-28|19:45:00|Black Friday shopping|Amazon|-325.99
-2025-12-31|23:59:59|New Year bonus|Employer|500.00
-2026-01-05|09:15:00|January paycheck|TechCorp|3500.00
-2026-01-20|13:45:22|Gym membership|LA Fitness|-45.00
+2025-11-28|19:45:00|Black Friday shopping|Amazon|-4325.99
+2025-12-31|23:59:59|New Year bonus|Nvidia|500.00
+2026-01-05|09:15:00|January paycheck|Nvidia|9000.00
+2026-01-20|13:45:22|Gym membership|City Sports|-60.00
 2026-02-14|19:30:00|Valentine dinner|Olive Garden|-87.50
 2026-02-28|10:00:00|Side hustle income|Upwork|450.00
-2026-03-01|08:30:15|March paycheck|TechCorp|3500.00
+2026-03-01|08:30:15|March paycheck|Nvidia|9500.00
 2026-03-10|12:15:00|Coffee|Starbucks|-6.25
 2026-03-15|14:00:00|Grocery shopping|Whole Foods|-156.78
 2026-03-20|17:30:45|Movie night|AMC|-32.50
 2026-03-25|11:00:00|Phone bill|Verizon|-89.99
-2026-04-01|08:00:00|April paycheck|TechCorp|3500.00
+2026-04-01|08:00:00|April paycheck|Nvidia|10000.00
 2026-04-05|10:30:00|Coffee|Starbucks|-5.75
 2026-04-10|12:45:00|Lunch|Chipotle|-12.50
 2026-04-15|14:20:00|Tax refund|IRS|1850.00
-2026-04-18|16:00:00|Gas|Shell|-45.30
+2026-04-18|16:00:00|Gas|Shell|-95.30
 2026-04-20|19:15:00|Dinner|Olive Garden|-67.80
 2026-04-22|08:00:00|coffee|Starbucks|-5.75
-2026-04-25|15:30:00|Online shopping|Amazon|-234.56
+2026-04-25|15:30:00|Online shopping|Amazon|-2500.56
 2026-04-27|11:00:00|Freelance payment|Client B|1200.00
 2026-04-28|13:45:00|Coffee|Starbucks|-6.50
-2026-04-30|15:22:34|Demo Deposit|Test Demo|500.00
-2026-04-30|15:23:36|Demo Payment|Demo Store|-5000.00
-2026-04-30|15:24:07|Demo Payment2|Demo Store2|-40000.00
+2026-04-29|02:15:00|Custom Suit|Valley Fair|-3000.00
+2026-04-30|05:25:00|Purchasing A Business|Blue Bottle|-30000.00
